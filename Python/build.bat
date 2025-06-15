@@ -1,0 +1,1 @@
+pyinstaller -F --runtime-tmpdir=. --hidden-import win32timezone MagicExtractor.py
