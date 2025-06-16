@@ -36,6 +36,7 @@ from win32service import SERVICE_STOP_PENDING, SERVICE_RUNNING
 from win32serviceutil import ServiceFramework, HandleCommandLine
 from wmi import WMI
 from zipfile import ZipFile
+from gc import collect, enable, disable, DEBUG_LEAK
 
 from concurrent.futures import ThreadPoolExecutor
 from threading import Timer
@@ -95,7 +96,6 @@ class Util:
     
 
         
-        
 
 class ZipFileWatcher(FileSystemEventHandler):
     def __init__(self):
@@ -118,6 +118,7 @@ class ZipFileWatcher(FileSystemEventHandler):
         if self.zip_files:
             Util.unzip_files_concurrently(self.zip_files)
             self.zip_files.clear()
+            collect()
 
 
 class Worker(ServiceFramework):
@@ -131,12 +132,14 @@ class Worker(ServiceFramework):
         self.event_handler = ZipFileWatcher()
         self.observer = Observer()
         self.folder_downloads = Util.get_download_folder()
+        enable()
 
     def SvcStop(self):
         self.ReportServiceStatus(SERVICE_STOP_PENDING)
         SetEvent(self.stop_event)
         self.observer.stop()
         self.observer.join()
+        disable()
     
     def SvcDoRun(self):
         self.ReportServiceStatus(SERVICE_RUNNING)
