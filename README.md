@@ -20,9 +20,8 @@
 If you prefer to install MagicExtractor manually, you can use the following commands in the terminal:
 
 ```powershell
-MagicExtractor.exe install
-MagicExtractor.exe start
 MagicExtractor.exe --startup=auto install
+MagicExtractor.exe start
 ```
 
 ### Removing the Service
